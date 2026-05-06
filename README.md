@@ -16,6 +16,9 @@
 
 ```text
 .
+├─ assets/
+│  ├─ sudoku_icon.ico
+│  └─ sudoku_icon.png
 ├─ gui/
 │  ├─ app.py
 │  ├─ main_window.py
@@ -28,6 +31,7 @@
 ├─ scripts/
 │  ├─ export_dataset.py
 │  ├─ generate_sample.py
+│  ├─ launch_gui.bat
 │  ├─ launch_gui.py
 │  └─ render_pdfs.py
 ├─ sudoku/
@@ -74,6 +78,12 @@ GUI では次の操作ができます。
 - 難易度、シード開始値、生成件数、PDF 出力件数の指定
 - JSON / CSV、問題 PDF、解答 PDF の出力有無の切り替え
 - `PDF設定` タブでページサイズ、配置方式、行数、列数、余白、間隔、タイトル表示の調整
+
+バッチファイルから起動する場合:
+
+```sh
+scripts\launch_gui.bat
+```
 
 ### スクリプトで使う
 
@@ -124,4 +134,5 @@ python scripts/generate_sample.py
 
 - GUI の実行には `PySide6` が必要です
 - PDF 生成には `reportlab` が必要です
+- `assets/sudoku_icon.ico` はデスクトップショートカット用のアイコンです
 - 実装本体は `sudoku/` パッケージ配下に分離されています
