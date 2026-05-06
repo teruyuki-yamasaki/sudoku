@@ -1,0 +1,19 @@
+2026-05-06 17:11:16 Start generation: difficulty=medium, seed_start=1000, count=88
+2026-05-06 17:11:16 Generated 1 / 88
+2026-05-06 17:11:16 Generated 10 / 88
+2026-05-06 17:11:17 Generated 20 / 88
+2026-05-06 17:11:18 Generated 30 / 88
+2026-05-06 17:11:19 Generated 40 / 88
+2026-05-06 17:11:21 Generated 50 / 88
+2026-05-06 17:11:22 Generated 60 / 88
+2026-05-06 17:11:22 Generated 70 / 88
+2026-05-06 17:11:29 Generated 80 / 88
+2026-05-06 17:11:30 Generated 88 / 88
+2026-05-06 17:11:30 Saving dataset files...
+2026-05-06 17:11:30 Saved JSON: C:\Users\Yamasakies\work\sudoku\output\sample\data\medium_seed1000.json
+2026-05-06 17:11:30 Saved CSV: C:\Users\Yamasakies\work\sudoku\output\sample\data\medium_seed1000.csv
+2026-05-06 17:11:30 Rendering problem PDF...
+2026-05-06 17:11:30 Saved problem PDF: C:\Users\Yamasakies\work\sudoku\output\sample\output\medium_seed1000_problems.pdf
+2026-05-06 17:11:30 Rendering answer PDF...
+2026-05-06 17:11:30 Saved answer PDF: C:\Users\Yamasakies\work\sudoku\output\sample\output\medium_seed1000_answers.pdf
+2026-05-06 17:11:30 Generation completed successfully.

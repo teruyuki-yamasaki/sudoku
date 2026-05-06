@@ -7,7 +7,16 @@
 ├─ scripts/
 │  ├─ export_dataset.py
 │  ├─ generate_sample.py
+│  ├─ launch_gui.py
 │  └─ render_pdfs.py
+├─ gui/
+│  ├─ app.py
+│  ├─ main_window.py
+│  ├─ models.py
+│  ├─ workers.py
+│  └─ tabs/
+│     ├─ generation_tab.py
+│     └─ log_tab.py
 ├─ sudoku/
 │  ├─ __init__.py
 │  ├─ config.py
@@ -26,6 +35,7 @@
 - `sudoku/pdf.py`: PDF レイアウトと描画
 - `sudoku/config.py`: 入出力設定
 - `scripts/`: 人が直接実行する入口をまとめた場所です
+- `gui/`: PySide6 ベースのデスクトップ GUI です
 
 ## 環境構築
 
@@ -55,9 +65,16 @@ python scripts/export_dataset.py
 python scripts/render_pdfs.py
 ```
 
+3. GUI起動
+
+```sh
+python scripts/launch_gui.py
+```
+
 ## 補足
 
 - `scripts/generate_sample.py` は単体の問題生成と動作確認用です
 - `scripts/export_dataset.py` は JSON / CSV の問題データを生成します
 - `scripts/render_pdfs.py` は生成済みの JSON をもとに問題集 PDF と解答集 PDF を作成します
+- `scripts/launch_gui.py` は PySide6 GUI を起動します
 - 実装本体は `sudoku/` パッケージ配下に分離してあります
