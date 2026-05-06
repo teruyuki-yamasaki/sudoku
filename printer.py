@@ -242,6 +242,7 @@ def make_pdf(
                 break
 
             p = puzzles[i]
+            cell = block.get("cell", CELL)
 
             title = f"No.{problem_no}  Level: {p['difficulty']}"
             draw_title(
@@ -253,7 +254,8 @@ def make_pdf(
             draw_grid(
                 c,
                 block["grid_x"],
-                block["grid_y"]
+                block["grid_y"],
+                cell=cell
             )
 
             grid_data = p["solution"] if show_solution else p["puzzle"]
@@ -261,7 +263,8 @@ def make_pdf(
                 c,
                 grid_data,
                 block["grid_x"],
-                block["grid_y"]
+                block["grid_y"],
+                cell=cell
             )
 
             i += 1
