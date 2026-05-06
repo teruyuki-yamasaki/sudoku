@@ -19,14 +19,16 @@ from PySide6.QtWidgets import (
 )
 
 from gui.models import GenerationRequest
+from sudoku.pdf import PdfRenderSettings
 from sudoku.puzzle import DIFFICULTY_PROFILES, MEDIUM
+from sudoku.config import default_base_directory
 
 
 class GenerationTab(QWidget):
     def __init__(self) -> None:
         super().__init__()
 
-        self.output_directory_edit = QLineEdit(str(Path.cwd()))
+        self.output_directory_edit = QLineEdit(str(default_base_directory()))
         self.browse_button = QPushButton("参照...")
 
         self.difficulty_combo = QComboBox()
@@ -130,7 +132,7 @@ class GenerationTab(QWidget):
         if self.printout_size_spin.value() > dataset_size:
             self.printout_size_spin.setValue(dataset_size)
 
-    def build_request(self) -> GenerationRequest:
+    def build_request(self, pdf_render_settings: PdfRenderSettings) -> GenerationRequest:
         return GenerationRequest(
             base_directory=Path(self.output_directory_edit.text()).expanduser(),
             difficulty_name=self.difficulty_combo.currentText(),
@@ -140,6 +142,7 @@ class GenerationTab(QWidget):
             export_json_csv=self.export_dataset_checkbox.isChecked(),
             export_problem_pdf=self.export_problem_pdf_checkbox.isChecked(),
             export_answer_pdf=self.export_answer_pdf_checkbox.isChecked(),
+            pdf_render_settings=pdf_render_settings,
         )
 
     def set_running_state(self, is_running: bool) -> None:

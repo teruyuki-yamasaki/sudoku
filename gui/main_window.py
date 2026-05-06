@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QUrl
 
+from gui.tabs.pdf_settings_tab import PdfSettingsTab
 from gui.tabs.generation_tab import GenerationTab
 from gui.tabs.log_tab import LogTab
 from gui.workers import GenerationWorker
@@ -29,14 +30,12 @@ class MainWindow(QMainWindow):
 
         self.generation_tab = GenerationTab()
         self.log_tab = LogTab()
+        self.pdf_settings_tab = PdfSettingsTab()
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.generation_tab, "生成")
+        self.tabs.addTab(self.pdf_settings_tab, "PDF設定")
         self.tabs.addTab(self.log_tab, "ログ")
-
-        placeholder_tab = QWidget()
-        self.tabs.addTab(placeholder_tab, "PDF調整")
-        self.tabs.setTabEnabled(2, False)
 
         self.setCentralWidget(self.tabs)
         self._connect_signals()
@@ -49,7 +48,7 @@ class MainWindow(QMainWindow):
         self.log_tab.save_button.clicked.connect(self.save_logs)
 
     def start_generation(self) -> None:
-        request = self.generation_tab.build_request()
+        request = self.generation_tab.build_request(self.pdf_settings_tab.build_settings())
         if not request.base_directory:
             QMessageBox.warning(self, "入力エラー", "保存先フォルダを指定してください。")
             return
@@ -60,6 +59,7 @@ class MainWindow(QMainWindow):
         self.generation_tab.set_progress(0)
         self.generation_tab.set_status("開始準備中")
         self.generation_tab.set_running_state(True)
+        self.pdf_settings_tab.set_running_state(True)
         self.tabs.setCurrentWidget(self.generation_tab)
 
         self.generation_thread = QThread(self)
@@ -122,6 +122,7 @@ class MainWindow(QMainWindow):
 
     def _cleanup_generation(self) -> None:
         self.generation_tab.set_running_state(False)
+        self.pdf_settings_tab.set_running_state(False)
         if self.generation_thread is not None:
             self.generation_thread.deleteLater()
         if self.generation_worker is not None:

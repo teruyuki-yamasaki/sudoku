@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from sudoku.config import AppConfig
+from sudoku.pdf import PdfRenderSettings
 
 
 @dataclass(frozen=True)
@@ -16,6 +17,7 @@ class GenerationRequest:
     export_json_csv: bool
     export_problem_pdf: bool
     export_answer_pdf: bool
+    pdf_render_settings: PdfRenderSettings
 
     @property
     def data_directory(self) -> Path:

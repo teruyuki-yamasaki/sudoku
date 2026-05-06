@@ -86,7 +86,12 @@ class GenerationWorker(QObject):
                 self.status_changed.emit("問題PDFを生成しています")
                 self.progress_changed.emit(85)
                 self._emit_log("Rendering problem PDF...")
-                make_pdf_document(puzzle_rows, app_config.problems_pdf_path, show_solution=False)
+                make_pdf_document(
+                    puzzle_rows,
+                    app_config.problems_pdf_path,
+                    show_solution=False,
+                    render_settings=self.request.pdf_render_settings,
+                )
                 artifacts["problem_pdf"] = str(app_config.problems_pdf_path)
                 self._emit_log(f"Saved problem PDF: {app_config.problems_pdf_path}")
 
@@ -97,7 +102,12 @@ class GenerationWorker(QObject):
                 self.status_changed.emit("解答PDFを生成しています")
                 self.progress_changed.emit(95)
                 self._emit_log("Rendering answer PDF...")
-                make_pdf_document(puzzle_rows, app_config.answers_pdf_path, show_solution=True)
+                make_pdf_document(
+                    puzzle_rows,
+                    app_config.answers_pdf_path,
+                    show_solution=True,
+                    render_settings=self.request.pdf_render_settings,
+                )
                 artifacts["answer_pdf"] = str(app_config.answers_pdf_path)
                 self._emit_log(f"Saved answer PDF: {app_config.answers_pdf_path}")
 

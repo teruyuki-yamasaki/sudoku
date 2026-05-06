@@ -31,6 +31,49 @@ class LayoutBlock:
     cell_size: int = DEFAULT_CELL_SIZE
 
 
+@dataclass(frozen=True)
+class PdfRenderSettings:
+    page_size_name: str = "A5"
+    layout_mode: str = "centered"
+    row_count: int = 2
+    column_count: int = 1
+    gap_x: int = 40
+    gap_y: int = 40
+    margin_x: int = DEFAULT_MARGIN_X
+    margin_y: int = DEFAULT_MARGIN_Y
+    show_title: bool = True
+    title_font_size: int = 14
+
+    def to_dict(self) -> dict[str, int | str | bool]:
+        return {
+            "page_size_name": self.page_size_name,
+            "layout_mode": self.layout_mode,
+            "row_count": self.row_count,
+            "column_count": self.column_count,
+            "gap_x": self.gap_x,
+            "gap_y": self.gap_y,
+            "margin_x": self.margin_x,
+            "margin_y": self.margin_y,
+            "show_title": self.show_title,
+            "title_font_size": self.title_font_size,
+        }
+
+    @classmethod
+    def from_dict(cls, values: dict) -> "PdfRenderSettings":
+        return cls(
+            page_size_name=values.get("page_size_name", "A5"),
+            layout_mode=values.get("layout_mode", "centered"),
+            row_count=int(values.get("row_count", 2)),
+            column_count=int(values.get("column_count", 1)),
+            gap_x=int(values.get("gap_x", 40)),
+            gap_y=int(values.get("gap_y", 40)),
+            margin_x=int(values.get("margin_x", DEFAULT_MARGIN_X)),
+            margin_y=int(values.get("margin_y", DEFAULT_MARGIN_Y)),
+            show_title=bool(values.get("show_title", True)),
+            title_font_size=int(values.get("title_font_size", 14)),
+        )
+
+
 def draw_grid(pdf_canvas, x: float, y: float, cell_size: int = DEFAULT_CELL_SIZE, base_width: int = 1) -> None:
     grid_size = cell_size * 9
     for line_index in range(10):
@@ -65,6 +108,47 @@ def draw_grid_values(
 def draw_title(pdf_canvas, text: str, x: float, y: float, font_name: str = "Helvetica-Bold", font_size: int = 14) -> None:
     pdf_canvas.setFont(font_name, font_size)
     pdf_canvas.drawString(x, y, text)
+
+
+def resolve_page_size(page_size_name: str):
+    page_sizes = {
+        "A5": A5,
+    }
+    try:
+        from reportlab.lib.pagesizes import A4
+
+        page_sizes["A4"] = A4
+    except ModuleNotFoundError:
+        page_sizes["A4"] = (595, 842)
+    return page_sizes[page_size_name]
+
+
+def build_layout_factory(render_settings: PdfRenderSettings) -> Callable:
+    if render_settings.layout_mode == "centered":
+        return lambda size: centered_grid_layout(
+            size,
+            render_settings.row_count,
+            render_settings.column_count,
+            gap_x=render_settings.gap_x,
+            gap_y=render_settings.gap_y,
+        )
+    if render_settings.layout_mode == "maximized":
+        return lambda size: maximized_grid_layout(
+            size,
+            render_settings.row_count,
+            render_settings.column_count,
+            margin_x=render_settings.margin_x,
+            margin_y=render_settings.margin_y,
+            gap_x=render_settings.gap_x,
+            gap_y=render_settings.gap_y,
+        )
+    raise ValueError(f"Unknown layout mode: {render_settings.layout_mode}")
+
+
+def build_layout_blocks(render_settings: PdfRenderSettings) -> tuple[tuple[float, float], list[LayoutBlock]]:
+    page_size = resolve_page_size(render_settings.page_size_name)
+    layout_factory = build_layout_factory(render_settings)
+    return page_size, layout_factory(page_size)
 
 
 def single_puzzle_layout(page_size) -> list[LayoutBlock]:
@@ -158,9 +242,14 @@ def make_pdf_document(
     page_size=A5,
     layout_factory: Callable = lambda size: centered_grid_layout(size, 2, 1),
     show_solution: bool = False,
+    render_settings: PdfRenderSettings | None = None,
 ) -> None:
     if reportlab_canvas is None:
         raise ModuleNotFoundError("reportlab is required to generate PDF files.")
+
+    if render_settings is not None:
+        page_size = resolve_page_size(render_settings.page_size_name)
+        layout_factory = build_layout_factory(render_settings)
 
     normalized_pdf_path = Path(pdf_path)
     normalized_pdf_path.parent.mkdir(parents=True, exist_ok=True)
@@ -176,7 +265,14 @@ def make_pdf_document(
 
             puzzle_record = puzzles[puzzle_index]
             title = f"No.{problem_number}  Level: {puzzle_record['difficulty']}"
-            draw_title(pdf_canvas, title, block.title_x, block.title_y)
+            if render_settings is None or render_settings.show_title:
+                draw_title(
+                    pdf_canvas,
+                    title,
+                    block.title_x,
+                    block.title_y,
+                    font_size=14 if render_settings is None else render_settings.title_font_size,
+                )
             draw_grid(pdf_canvas, block.grid_x, block.grid_y, cell_size=block.cell_size)
 
             grid_string = puzzle_record["solution"] if show_solution else puzzle_record["puzzle"]

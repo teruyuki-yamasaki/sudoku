@@ -6,14 +6,21 @@ from pathlib import Path
 from .puzzle import MEDIUM
 
 
+def default_base_directory() -> Path:
+    desktop_directory = Path.home() / "Desktop"
+    if desktop_directory.exists():
+        return desktop_directory / "sudoku_data"
+    return Path.cwd() / "sudoku_data"
+
+
 @dataclass
 class AppConfig:
     dataset_size: int = 60
     printout_size: int = 60
     seed_start: int = 1000
     difficulty_name: str = MEDIUM
-    data_directory: Path = Path("./data")
-    output_directory: Path = Path("./output")
+    data_directory: Path = default_base_directory() / "data"
+    output_directory: Path = default_base_directory() / "output"
 
     @property
     def base_filename(self) -> str:
